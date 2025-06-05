@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Cat Demo - React Assignment</title>
+  <style>
+    :root {
+      --primary-color: #ff6f61;
+      --secondary-color: #4a90e2;
+      --background-gradient: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+      --button-gradient: linear-gradient(45deg, #ff6f61, #ff9472);
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      margin: 0;
+      font-family: var(--font-family);
+      background: var(--background-gradient);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    h1 {
+      font-weight: 900;
+      font-size: 3rem;
+      margin-bottom: 0.2rem;
+      color: var(--secondary-color);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    h2 {
+      font-weight: 400;
+      margin-top: 0;
+      margin-bottom: 2rem;
+      color: var(--primary-color);
+    }
+    .cat-container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      max-width: 400px;
+      width: 100%;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.3s ease;
+    }
+    .cat-container:hover {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    img.cat-image {
+      max-width: 100%;
+      border-radius: 1rem;
+      object-fit: cover;
+      height: 300px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+    button {
+      background: var(--button-gradient);
+      border: none;
+      border-radius: 30px;
+      padding: 0.8rem 2rem;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(255, 111, 97, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(255, 111, 97, 0.8);
+    }
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Cat Demo</h1>
+  <h2>React Assignment</h2>
+
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function LiveCatDemo() {
+      const [catUrl, setCatUrl] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+
+      const fetchCat = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          // Using CATAAS API for random cat images
+          // Add a timestamp to force cache bypass
+          const url = `https://cataas.com/cat?timestamp=${new Date().getTime()}`;
+          setCatUrl(url);
+        } catch (err) {
+          setError('Failed to load cat image. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        fetchCat();
+      }, []);
+
+      return (
+        <div className="cat-container" role="main" aria-label="Live cat image container">
+          {loading && <p>Loading cat image...</p>}
+          {error && <p role="alert" style={{color: 'red'}}>{error}</p>}
+          {!loading && !error && catUrl && (
+            <img
+              src={catUrl}
+              alt="Random cat"
+              className="cat-image"
+              onLoad={() => setLoading(false)}
+              onError={() => setError('Failed to load cat image.')}
+            />
+          )}
+          <button onClick={fetchCat} aria-label="Load another cat image" disabled={loading}>
+            {loading ? 'Loading...' : 'New Cat!'}
+          </button>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<LiveCatDemo />);
+  </script>
+
+  <div class="footer">
+    Powered by <a href="https://cataas.com" target="_blank" rel="noopener noreferrer">CATAAS</a> API for live cat images.
+  </div>
+</body>
+</html>
+
